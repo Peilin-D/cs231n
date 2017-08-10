@@ -1,5 +1,5 @@
 import numpy as np
-from past.builtins import xrange
+# from past.builtins import xrange
 
 
 class KNearestNeighbor(object):
@@ -73,7 +73,7 @@ class KNearestNeighbor(object):
         # training point, and store the result in dists[i, j]. You should   #
         # not use a loop over dimension.                                    #
         #####################################################################
-        pass
+        dists[i, j] = np.norm(self.X_train[j] - X[i])
         #####################################################################
         #                       END OF YOUR CODE                            #
         #####################################################################
@@ -95,7 +95,8 @@ class KNearestNeighbor(object):
       # Compute the l2 distance between the ith test point and all training #
       # points, and store the result in dists[i, :].                        #
       #######################################################################
-      pass
+      tiled = np.tile(X[i], (num_train, 1))
+      dists[i] = np.linalg.norm(tiled - self.X_train, axis=1)
       #######################################################################
       #                         END OF YOUR CODE                            #
       #######################################################################
@@ -123,7 +124,12 @@ class KNearestNeighbor(object):
     # HINT: Try to formulate the l2 distance using matrix multiplication    #
     #       and two broadcast sums.                                         #
     #########################################################################
-    pass
+    # ||x - y||^2 = ||x||^2 - 2<x, y> + ||y||^2
+    Y = self.X_train
+    X_sq = np.tile(np.sum(X**2, axis=1), (num_train, 1)).T
+    Y_sq = np.tile(np.sum(Y**2, axis=1), (num_test, 1))
+    XY = np.dot(X, Y.T)
+    dists = np.sqrt(X_sq - 2 * XY + Y_sq)
     #########################################################################
     #                         END OF YOUR CODE                              #
     #########################################################################
